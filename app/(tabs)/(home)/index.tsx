@@ -1,7 +1,9 @@
 import { DateInput } from "@/components/DateInput";
+import LocationSearchInput from "@/components/LocationSearchInput";
 import TimeInput from "@/components/TimeInput";
+import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { KeyboardAvoidingView, Platform, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function HomeIndex() {
   const [name, setName] = useState("");
@@ -10,9 +12,30 @@ export default function HomeIndex() {
   const [birthPlace, setBirthPlace] = useState("");
   const [formReady, setFormReady] = useState(false);
 
+  const [birthPlaceCoordinates, setBirthPlaceCoordinates] = useState({ latitude: 0, longitude: 0, displayName: "" });
+
+
+
   const onSubmit = () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore route string
+    router.push("/chart");
+    console.log('Form data:', { name, birthDate, birthTime, birthPlace, coordinates: birthPlaceCoordinates });
     alert(`${name} was born on ${birthDate} at ${birthTime} in ${birthPlace}`);
   }
+
+
+  // Handle location selection from the search component
+  const handleLocationSelect = (location: { name: string, latitude: number, longitude: number }) => {
+    setBirthPlace(location.name);
+    setBirthPlaceCoordinates({
+      latitude: location.latitude,
+      longitude: location.longitude,
+      displayName: location.name
+    });
+  };
+
+
 
   useEffect(() => {
     setFormReady(!!(name && birthDate && birthTime && birthPlace));
@@ -21,7 +44,10 @@ export default function HomeIndex() {
     }
   }, [name, birthDate, birthTime, birthPlace]);
 
-  console.log(name, birthDate, birthTime, birthPlace);
+  console.log(name, birthDate, birthTime, birthPlace, birthPlaceCoordinates);
+
+
+
 
   return (
 
@@ -32,10 +58,7 @@ export default function HomeIndex() {
         style={{ flex: 1, width: "100%" }}
         keyboardVerticalOffset={10}
       >
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.container}
-        >
+        <View style={styles.container}>
           <Text style={styles.heading}>~ welcome ~</Text>
           <Text style={styles.subHeading}>please fill out your details</Text>
 
@@ -62,12 +85,12 @@ export default function HomeIndex() {
 
           {/* Birth Place */}
           <View style={{ width: "100%", alignItems: "center" }}>
-            <TextInput
+            <LocationSearchInput
               placeholder="Enter birth location"
               placeholderTextColor="#999"
-              style={styles.input}
+              style={{}}
               value={birthPlace}
-              onChangeText={setBirthPlace}
+              onLocationSelect={handleLocationSelect}
             />
           </View>
 
@@ -88,7 +111,7 @@ export default function HomeIndex() {
           </TouchableOpacity>
 
 
-        </ScrollView>
+        </View>
 
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -97,6 +120,7 @@ export default function HomeIndex() {
 }
 
 const styles = StyleSheet.create({
+
   container: {
     flex: 1,
     justifyContent: "center",
@@ -117,6 +141,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: "center",
     marginBottom: 24,
+
+  },
+  label: {
+    fontWeight: "light",
+    fontSize: 10,
+    color: "#d1d1d1",
 
   },
   input: {

@@ -23,25 +23,26 @@ export const DateInput: FC<Props> = ({ label, value, onDateChange }) => {
             }
       };
 
-      return (
-            <>
-                  <LabeledInput
-                        label={label}
-                        value={value}
-                        placeholder="MM/DD/YYYY"
-                        editable={false}
-                        onPress={() => setShow(true)}
+      if (show) {
+            return (
+                  <DateTimePicker
+                        mode="date"
+                        display="spinner"
+                        themeVariant="dark"
+                        textColor="white"
+                        value={internal}
+                        onChange={onPicked}
                   />
-                  {show && (
-                        <DateTimePicker
-                              mode="date"
-                              display="spinner"
-                              themeVariant="dark"
-                              textColor="white"
-                              value={internal}
-                              onChange={onPicked}
-                        />
-                  )}
-            </>
+            );
+      }
+
+      return (
+            <LabeledInput
+                  label={label}
+                  value={value}
+                  placeholder="MM/DD/YYYY"
+                  editable={false}
+                  onPress={() => setShow(true)}
+            />
       );
 };
