@@ -11,6 +11,7 @@
         "simulator": true
       }
     },
+    
     "preview": {
       "distribution": "internal"
     },
