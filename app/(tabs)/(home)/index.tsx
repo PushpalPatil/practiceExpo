@@ -1,7 +1,6 @@
-import { Link } from "expo-router";
-import React, { useEffect, useState } from "react";
-import { KeyboardAvoidingView, Platform, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, Touchable, TouchableOpacity, View } from "react-native";
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
+import React, { useEffect, useState } from "react";
+import { KeyboardAvoidingView, Platform, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function HomeIndex() {
   const [name, setName] = useState("");
@@ -12,24 +11,60 @@ export default function HomeIndex() {
 
   const [datePicked, setDatePicked] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [timePicked, setTimePicked] = useState(new Date());
 
   const toggleDatePicker = () => {
     setShowDatePicker(!showDatePicker);
   };
+  const toggleTimePicker = () => {
+    setShowTimePicker(!showTimePicker);
+  };
 
-  const onDatePicked = (event:DateTimePickerEvent, selectedDate:any) => {
-    if (event.type == "set") {
-      const currentDate = selectedDate;
-      setDatePicked(currentDate);
-    } else {
-      toggleDatePicker();
+  const formatDisplayDate = (date: Date) => {
+    return (
+      date.getMonth() + 1
+    )
+      .toString()
+      .padStart(2, "0") +
+      "/" +
+      date.getDate().toString().padStart(2, "0") +
+      "/" +
+      date.getFullYear();
+  };
+  
+  const formatDisplayTime = (time: Date) => {
+    return (
+      time.getHours().toString().padStart(2, "0") +
+      ":" +
+      time.getMinutes().toString().padStart(2, "0") +
+      " " +
+      (time.getHours() >= 12 ? "PM" : "AM")
+    );
+  };
+
+  const onTimePicked = (event: DateTimePickerEvent, selectedTime?: Date) => {
+    if (event.type === "set" && selectedTime) {
+      setTimePicked(selectedTime);
+      setBirthTime(formatDisplayTime(selectedTime));
     }
-  }
+    setShowTimePicker(false);
+  };
+
+  const onDatePicked = (event: DateTimePickerEvent, selectedDate?: Date) => {
+    if (event.type === "set" && selectedDate) {
+      setDatePicked(selectedDate);
+      setBirthDate(formatDisplayDate(selectedDate));
+    }
+    // In both cases (set or dismissed) close the picker
+    setShowDatePicker(false);
+  };
 
 
   const onSubmit = () => {
     alert(`${name} was born on ${birthDate} at ${birthTime} in ${birthPlace}`);
   }
+
   useEffect(() => {
     setFormReady(!!(name && birthDate && birthTime && birthPlace));
     return () => {
@@ -38,10 +73,6 @@ export default function HomeIndex() {
   }, [name, birthDate, birthTime, birthPlace]);
 
   console.log(name, birthDate, birthTime, birthPlace);
-
-
-
-
 
   return (
 
@@ -72,19 +103,21 @@ export default function HomeIndex() {
 
           {/* Birth Date */}
           <View style={{ width: "100%", alignItems: "center" }}>
-
             {showDatePicker &&
-              
-              (<DateTimePicker
-              mode="date"
-              display="spinner"
-              value={datePicked}
-              onChange={onDatePicked}
-              style={styles.datePicker}
-            />)
+              (
+                <DateTimePicker
+                  mode="date"
+                  display="spinner"
+                  themeVariant="dark"
+                  textColor="white"
+                  value={datePicked}
+                  onChange={onDatePicked}
+                  style={styles.datePicker}
+                />
+              )
             }
             {!showDatePicker && (
-              <Pressable onPress={toggleDatePicker} style={{width: "100%", alignItems: "center"}}>
+              <Pressable onPress={toggleDatePicker} style={{ width: "100%", alignItems: "center" }}>
                 <TextInput
                   placeholder="MM/DD/YYYY"
                   placeholderTextColor="#999"
@@ -93,22 +126,42 @@ export default function HomeIndex() {
                   onChangeText={setBirthDate}
                   editable={false}
                   onPressIn={toggleDatePicker}
-                 
+
                 />
               </Pressable>
             )}
-            
           </View>
 
           {/* Birth Time */}
           <View style={{ width: "100%", alignItems: "center" }}>
-            <TextInput
-              placeholder="HH:MM AM/PM"
-              placeholderTextColor="#999"
-              style={styles.input}
-              value={birthTime}
-              onChangeText={setBirthTime}
-            />
+            {showTimePicker &&
+              (
+              <DateTimePicker
+                mode="time"
+                display="spinner"
+                themeVariant="dark"
+                textColor="white"
+                value={timePicked}
+                onChange={onTimePicked}
+                style={styles.datePicker}
+              />
+              )
+            }
+            {!showTimePicker && (
+              <Pressable onPress={toggleTimePicker} style={{ width: "100%", alignItems: "center" }}>
+                <TextInput
+                  placeholder="HH:MM AM/PM"
+                  placeholderTextColor="#999"
+                  style={styles.input}
+                  value={birthTime}
+                  onChangeText={setBirthTime}
+                  editable={false}
+                  onPressIn={toggleTimePicker}
+
+                />
+              </Pressable>
+            )}
+        
           </View>
 
           {/* Birth Place */}
@@ -125,20 +178,20 @@ export default function HomeIndex() {
           <TouchableOpacity
             style={[
               styles.button,
-              {backgroundColor: formReady ? "gray" : "black"},
+              { backgroundColor: formReady ? "gray" : "black" },
             ]}
             disabled={!formReady}
             onPress={onSubmit}
           >
             <Text style={[
               styles.buttonText,
-              {color: formReady ? "white" : "gray"}
+              { color: formReady ? "white" : "gray" }
             ]}>
               submit
             </Text>
           </TouchableOpacity>
-          
-          <Link href="/details" style={styles.link}>talk to your planets</Link>
+
+
         </ScrollView>
 
       </KeyboardAvoidingView>
@@ -196,7 +249,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#444",
     color: "white",
-    marginTop:20,
+    marginTop: 20,
 
   },
   buttonText: {
@@ -204,11 +257,10 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   datePicker: {
-    height: 120,
+    width: "100%",
     borderWidth: 1,
     borderColor: "#444",
     marginTop: -10,
-    width: "100%",
   },
 });
 
