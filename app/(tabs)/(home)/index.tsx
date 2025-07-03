@@ -1,6 +1,7 @@
-import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
+import { DateInput } from "@/components/DateInput";
+import TimeInput from "@/components/TimeInput";
 import React, { useEffect, useState } from "react";
-import { KeyboardAvoidingView, Platform, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function HomeIndex() {
   const [name, setName] = useState("");
@@ -8,58 +9,6 @@ export default function HomeIndex() {
   const [birthTime, setBirthTime] = useState("");
   const [birthPlace, setBirthPlace] = useState("");
   const [formReady, setFormReady] = useState(false);
-
-  const [datePicked, setDatePicked] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showTimePicker, setShowTimePicker] = useState(false);
-  const [timePicked, setTimePicked] = useState(new Date());
-
-  const toggleDatePicker = () => {
-    setShowDatePicker(!showDatePicker);
-  };
-  const toggleTimePicker = () => {
-    setShowTimePicker(!showTimePicker);
-  };
-
-  const formatDisplayDate = (date: Date) => {
-    return (
-      date.getMonth() + 1
-    )
-      .toString()
-      .padStart(2, "0") +
-      "/" +
-      date.getDate().toString().padStart(2, "0") +
-      "/" +
-      date.getFullYear();
-  };
-  
-  const formatDisplayTime = (time: Date) => {
-    return (
-      time.getHours().toString().padStart(2, "0") +
-      ":" +
-      time.getMinutes().toString().padStart(2, "0") +
-      " " +
-      (time.getHours() >= 12 ? "PM" : "AM")
-    );
-  };
-
-  const onTimePicked = (event: DateTimePickerEvent, selectedTime?: Date) => {
-    if (event.type === "set" && selectedTime) {
-      setTimePicked(selectedTime);
-      setBirthTime(formatDisplayTime(selectedTime));
-    }
-    setShowTimePicker(false);
-  };
-
-  const onDatePicked = (event: DateTimePickerEvent, selectedDate?: Date) => {
-    if (event.type === "set" && selectedDate) {
-      setDatePicked(selectedDate);
-      setBirthDate(formatDisplayDate(selectedDate));
-    }
-    // In both cases (set or dismissed) close the picker
-    setShowDatePicker(false);
-  };
-
 
   const onSubmit = () => {
     alert(`${name} was born on ${birthDate} at ${birthTime} in ${birthPlace}`);
@@ -103,65 +52,12 @@ export default function HomeIndex() {
 
           {/* Birth Date */}
           <View style={{ width: "100%", alignItems: "center" }}>
-            {showDatePicker &&
-              (
-                <DateTimePicker
-                  mode="date"
-                  display="spinner"
-                  themeVariant="dark"
-                  textColor="white"
-                  value={datePicked}
-                  onChange={onDatePicked}
-                  style={styles.datePicker}
-                />
-              )
-            }
-            {!showDatePicker && (
-              <Pressable onPress={toggleDatePicker} style={{ width: "100%", alignItems: "center" }}>
-                <TextInput
-                  placeholder="MM/DD/YYYY"
-                  placeholderTextColor="#999"
-                  style={styles.input}
-                  value={birthDate}
-                  onChangeText={setBirthDate}
-                  editable={false}
-                  onPressIn={toggleDatePicker}
-
-                />
-              </Pressable>
-            )}
+            <DateInput label="Birth Date" value={birthDate} onDateChange={setBirthDate} />
           </View>
 
           {/* Birth Time */}
           <View style={{ width: "100%", alignItems: "center" }}>
-            {showTimePicker &&
-              (
-              <DateTimePicker
-                mode="time"
-                display="spinner"
-                themeVariant="dark"
-                textColor="white"
-                value={timePicked}
-                onChange={onTimePicked}
-                style={styles.datePicker}
-              />
-              )
-            }
-            {!showTimePicker && (
-              <Pressable onPress={toggleTimePicker} style={{ width: "100%", alignItems: "center" }}>
-                <TextInput
-                  placeholder="HH:MM AM/PM"
-                  placeholderTextColor="#999"
-                  style={styles.input}
-                  value={birthTime}
-                  onChangeText={setBirthTime}
-                  editable={false}
-                  onPressIn={toggleTimePicker}
-
-                />
-              </Pressable>
-            )}
-        
+            <TimeInput label="Birth Time" value={birthTime} onTimeChange={setBirthTime} />
           </View>
 
           {/* Birth Place */}
