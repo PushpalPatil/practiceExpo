@@ -24,26 +24,27 @@ const TimeInput: FC<Props> = ({ label, value, onTimeChange }) => {
             }
       };
 
-      return (
-            <>
-                  <LabeledInput
-                        label={label}
-                        value={value}
-                        placeholder="HH:MM AM/PM"
-                        editable={false}
-                        onPress={() => setShow(true)}
+      if (show) {
+            return (
+                  <DateTimePicker
+                        mode="time"
+                        display="spinner"
+                        themeVariant="dark"
+                        textColor="white"
+                        value={internal}
+                        onChange={onPicked}
                   />
-                  {show && (
-                        <DateTimePicker
-                              mode="time"
-                              display="spinner"
-                              themeVariant="dark"
-                              textColor="white"
-                              value={internal}
-                              onChange={onPicked}
-                        />
-                  )}
-            </>
+            );
+      }
+
+      return (
+            <LabeledInput
+                  label={label}
+                  value={value}
+                  placeholder="HH:MM AM/PM"
+                  editable={false}
+                  onPress={() => setShow(true)}
+            />
       );
 };
 
